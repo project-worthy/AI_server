@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+opencv-python = "*"
+numpy = "*"
+inquirer = "*"
+python-dotenv = "*"
+pytest = "*"
+python-socketio = {extras = ["asyncio_client"], version = "*"}
+requests = "*"
+websocket-client = "*"
+pydantic = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
+
+[scripts]
+start = "python src/main.py"
+test = "python -c 'print(\"No test\")'"
+"checkdata" = "python src/check_value.py"
+"start:socket" = "python ./src/client.py"
+"start:cali" = "python ./src/calibration.py"
+"start:socketio" = "python ./src/socketioClient.py"
