@@ -1,9 +1,12 @@
-from typing import Union
 from fastapi import FastAPI
 import uvicorn
 from pydantic import BaseModel
 import numpy as np
 import pickle
+from contextlib import asynccontextmanager
+from layout.layout import layout_loop
+
+from multiprocessing import Process, Manager
 
 class Item(BaseModel):
   camMatrix:list
@@ -15,9 +18,23 @@ class RotationMatrixDto(BaseModel):
 
 from sockets import SocketManager
 
-app = FastAPI()
-socketManager = SocketManager()
-app.mount("/ws",app=socketManager.getSocketApp())
+
+
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+  work_dict = Manager().dict({"distances":[0,0,0],"device_coordinate":[250,50]})
+  layoutProcess = Process(target=layout_loop,args=(work_dict,))
+  layoutProcess.start()
+  socketManager = SocketManager(work_dict)
+  app.mount("/ws",app=socketManager.getSocketApp())
+  yield
+  layoutProcess.terminate()
+  layoutProcess.join()
+
+app = FastAPI(lifespan=lifespan)
+
 
 @app.get("/")
 def get_home():
@@ -34,8 +51,6 @@ def read_item(item:Item):
   cameraMatrix = np.array(itemJson['camMatrix'])
   distCoeff = np.array(itemJson["distCoeff"])
   pickle.dump({"cameraMatrix":cameraMatrix,"distCoeff":distCoeff},open("intrinsic.pkl","wb"))
-  # return {item['name']}
-  # return { "item_id": item_id, "q":q}
 
 
 @app.post("/extrinsic")
@@ -46,5 +61,6 @@ def read_martrix(rmat:RotationMatrixDto):
   pickle.dump({"rvecs":rvecs,"tvecs":tvecs},open("extrinsic.pkl","wb"))
   print(itemJson)
 
+
 if __name__ == "__main__":
-  uvicorn.run("server:app",reload=True,host="172.22.173.67",port=8001)
+  uvicorn.run("server:main",reload=True,host="172.22.173.67",port=8001)
