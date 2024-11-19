@@ -267,7 +267,7 @@ import numpy as np
 def trilateration_3d(p1,p2,p3,r1,r2,r3):
     face1 = intersection_spheres(p1,r1,p2,r2)
     face2 = intersection_spheres(p2,r2,p3,r3)
-    print(face1,face2)
+    # print(face1,face2)
     a = line_of_intersection(face1,face2)
     # print(a)
     return a

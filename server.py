@@ -8,6 +8,9 @@ from layout.layout import layout_loop
 
 from multiprocessing import Process, Manager
 
+from dotenv import load_dotenv
+import os
+
 class Item(BaseModel):
   camMatrix:list
   distCoeff: list
@@ -18,13 +21,29 @@ class RotationMatrixDto(BaseModel):
 
 from sockets import SocketManager
 
+load_dotenv(verbose=True)
+load_dotenv(dotenv_path=".secrets.env",verbose=True)
 
+CAMERA_DEGREE = int(os.getenv("CAMERA_DEGREE"))
+WIDTH = int(os.getenv("WIDTH"))
+HEIGHT = int(os.getenv("HEIGHT"))
+HOST = os.getenv("HOST")
+PORT = int(os.getenv("PORT"))
+THRESHOLD_DISTANCE=float(os.getenv("THRESHOLD_DISTANCE"))
 
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  work_dict = Manager().dict({"distances":[0,0,0],"device_coordinate":[250,50]})
+  work_dict = Manager().dict({
+    "distances":[0,0,0],
+    "device_coordinates":[],
+    "humans_locations":[],
+    "camera_degree":CAMERA_DEGREE,
+    "width":WIDTH,
+    "height":HEIGHT,
+    "threshold_distance":THRESHOLD_DISTANCE
+    })
   layoutProcess = Process(target=layout_loop,args=(work_dict,))
   layoutProcess.start()
   socketManager = SocketManager(work_dict)
@@ -63,4 +82,4 @@ def read_martrix(rmat:RotationMatrixDto):
 
 
 if __name__ == "__main__":
-  uvicorn.run("server:main",reload=True,host="172.22.173.67",port=8001)
+  uvicorn.run("server:app",reload=True,host=HOST,port=PORT)
