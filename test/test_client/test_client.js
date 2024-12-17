@@ -2,7 +2,7 @@ import { io } from "socket.io-client"
 import readline from "readline/promises"
 import { stdin, stdout } from "process"
 
-const socket = io("http://118.47.179.23:8001/temp",{path:"/ws",autoConnect:false});
+const socket = io("http://HOSTNAME/temp",{path:"/ws",autoConnect:false});
 
 //,{path: "/sockets"}
 

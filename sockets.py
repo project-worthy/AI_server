@@ -134,43 +134,43 @@ class SocketManager:
           bounding_bottom = bottom
 
           init_pos = np.array([left,top])
-          if(a.size > 0):
-            # # 기존 방식
-            # a = np.array([np.argwhere(np.all(a == target_color, axis=-1))[[0,-1]] for target_color in target_colors])
-            # flattened = a.ravel()
-            # values = flattened[[0,2,4,6]]
-            # min_value = np.min(values)
-            # max_value = np.max(values)
+          # if(a.size > 0):
+          #   # # 기존 방식
+          #   # a = np.array([np.argwhere(np.all(a == target_color, axis=-1))[[0,-1]] for target_color in target_colors])
+          #   # flattened = a.ravel()
+          #   # values = flattened[[0,2,4,6]]
+          #   # min_value = np.min(values)
+          #   # max_value = np.max(values)
 
 
-            results = []
-            for target_color in target_colors:
-                # Find all locations of the target color
-                indices = np.argwhere(np.all(a == target_color, axis=-1))
+          #   results = []
+          #   for target_color in target_colors:
+          #       # Find all locations of the target color
+          #       indices = np.argwhere(np.all(a == target_color, axis=-1))
                 
-                # Check if there are any matches
-                if indices.size > 0:
-                    # Store the first and last occurrence
-                    first_last = indices[[0, -1]]
-                    results.append(first_last)
+          #       # Check if there are any matches
+          #       if indices.size > 0:
+          #           # Store the first and last occurrence
+          #           first_last = indices[[0, -1]]
+          #           results.append(first_last)
 
-            flattened = np.array(results).ravel()
+          #   flattened = np.array(results).ravel()
 
-            if(len(flattened) > 0):
-              values = flattened[np.arange(0,len(flattened),2)]
-              min_value = np.min(values)
-              max_value = np.max(values)
-              # print(values,np.arange(0,len(flattened),2))
-              bounding_bottom = max_value + top
-              bounding_top = min_value + top
+          #   if(len(flattened) > 0):
+          #     values = flattened[np.arange(0,len(flattened),2)]
+          #     min_value = np.min(values)
+          #     max_value = np.max(values)
+          #     # print(values,np.arange(0,len(flattened),2))
+          #     bounding_bottom = max_value + top
+          #     bounding_top = min_value + top
 
 
-          print("1")
-          added_image = cv2.addWeighted(added_image,0.5,colored_mask.astype(np.uint8),0.5,0)
+          # print("1")
+          # added_image = cv2.addWeighted(added_image,0.5,colored_mask.astype(np.uint8),0.5,0)
 
 
  
-          cv2.rectangle(added_image,(left,bounding_top),(right,bounding_bottom),(0,255,255),2)
+          # cv2.rectangle(added_image,(left,bounding_top),(right,bounding_bottom),(0,255,255),2)
 
           # h = head['height']
           h = np.abs(bounding_top - bounding_bottom)
