@@ -3,14 +3,9 @@ import cv2
 import pickle
 
 import numpy as np
-import tensorflow as tf
 import time
 
 from headDetect.myFROZEN_GRAPH_HEAD import FROZEN_GRAPH_HEAD
-
-
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 # should go to env file
 PATH_TO_CKPT_HEAD = 'headDetect/models/HEAD_DETECTION_300x300_ssd_mobilenetv2.pb'
@@ -20,6 +15,12 @@ class SocketManager:
     self._socketInit()
     self.clientMap = dict()
     self.head_detector = FROZEN_GRAPH_HEAD(PATH_TO_CKPT_HEAD)
+    
+    self.f_x = 0
+    self.f_y = 0
+    self.c_x = 0
+    self.c_y = 0
+    self.rmat = np.array([])
 
     
 
@@ -39,8 +40,6 @@ class SocketManager:
 
       cameraMatrix = cameraMatrix
 
-# * 2.5
-# * 2.5
       self.f_x = cameraMatrix[0][0] # f_x
       self.f_y = cameraMatrix[1][1] # f_y
       self.c_x = cameraMatrix[0][2] # c_x
@@ -59,12 +58,12 @@ class SocketManager:
       del(self.clientMap[sid])
       print("disconnect",sid)
 
-    @self.sio_server.event(namespace="/calibration")
-    async def on_message(sid,data):
+    @self.sio_server.event(namespace="/calibration") #type: ingore
+    async def on_calibration(sid,data):
       data = pickle
 
 
-    @self.sio_server.on("ws:photo",namespace="/video")
+    @self.sio_server.on("ws:photo",namespace="/video") #type: ignore
     def on_message(sid,data):
       data = pickle.loads(data)
       img =cv2.imdecode(data,cv2.IMREAD_COLOR)
@@ -111,18 +110,6 @@ class SocketManager:
           multipled = np.matmul(mat_invert,cameraCoord)
           cv2.putText(img,'{},{}'.format(multipled[0],multipled[2]),(u,v + h + 30),0,5e-3 * 130,(0,0,255),2)
           cv2.putText(img,'{},{}'.format(cameraCoord[0],cameraCoord[2]),(u,v + h + 60),0,5e-3 * 130,(0,0,255),2)
-
-
-        # self.ax.clear()
-        # self.ax.scatter(xc,zc)
-        # self.ax.draw()
-        # plt.pause(0.0001)
-        # plt.clf()
-        # plt.scatter(xc,zc)
-        # plt.draw()
-        # plt.pause(0.0001)
-        # self.ax.pause(0.05)
-        # plt.show()
       
       cv2.imshow("img"+str(self.clientMap.get(sid)),img)
       cv2.waitKey(10)
