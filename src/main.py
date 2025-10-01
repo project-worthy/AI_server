@@ -66,7 +66,7 @@ intrinsicData = {
     "camMatrix":camMatrix.tolist(),
     "distCoeff":distCoeff.tolist(),
 }
-networkManager.post("intrinsic",intrinsicData)
+# networkManager.post("intrinsic",intrinsicData)
 
 if answer and answer["exstrinicParamCam"]:
     takePhoto(1,photoMethod="manual",save=True,path="images/extrinsic")
@@ -81,11 +81,11 @@ for jpgfile in glob.iglob(os.path.join("images/extrinsic","*.png")):
 rvecs,tvecs = calibrate(showPics=True,path="images/total",paramType="extrinsic",camMat=camMatrix,dist=distCoeff)
 print("camera position\n",np.matmul(-1 * cv2.Rodrigues(rvecs[0])[0].T,tvecs[0]))
 print("rvecs\n",rvecs[0])
-print("tvecs\n",[[x[0] * 0.01] for x in tvecs[0].tolist()])
+print("tvecs\n",[[x[0]] for x in tvecs[0].tolist()])
 extrinsicData={
     "rvecs":rvecs[0].tolist(),
-    "tvecs":[[x[0] * 0.01] for x in tvecs[0].tolist()]
+    "tvecs":[[x[0]] for x in tvecs[0].tolist()]
 }
-networkManager.post("extrinsic",extrinsicData)
+# networkManager.post("extrinsic",extrinsicData)
 # socketManager.connect()
 socketConnect(HOST,PORT)

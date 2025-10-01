@@ -64,11 +64,11 @@ def calibrate(showPics=True,path="demoImages/calibration",paramType="intrinsic",
     print(os.path.join(calibrateDir,'*.png'))
     print(len(imgPathList), "images found")
 
-    nRows = 9
+    nRows = 8
     nCols = 6
     termCriteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     worldPtsCur = np.zeros((nRows*nCols,3), np.float32)
-    worldPtsCur[:,:2] = np.mgrid[0:nCols,0:nRows].T.reshape(-1,2)
+    worldPtsCur[:,:2] = np.mgrid[0:nCols,0:nRows].T.reshape(-1,2)*0.035
     worldPtsList = []
     imgPtsList = []
     shape = ()
@@ -85,11 +85,12 @@ def calibrate(showPics=True,path="demoImages/calibration",paramType="intrinsic",
             imgPtsList.append(cornersRefined)
             if showPics:
                 cv2.drawChessboardCorners(imgBGR, (nCols,nRows), cornersRefined, cornersFound)
-                cv2.imshow('img', imgBGR)
-                cv2.waitKey(500)
+                # cv2.imshow('img', imgBGR)
+                # cv2.waitKey(500)
     cv2.destroyAllWindows()
 
-    repError, camMatrix, distCoeff, rvecs, tvecs = cv2.calibrateCamera(worldPtsList, imgPtsList, shape, camMat, dist) #type: ignore
+    print(shape)
+    repError, camMatrix, distCoeff, rvecs, tvecs = cv2.calibrateCamera(worldPtsList, imgPtsList, shape,None,None)
     print("Camera Matrix:\n",camMatrix)
     print("Reroj Error (pixels): {:.4f}".format(repError))
 
